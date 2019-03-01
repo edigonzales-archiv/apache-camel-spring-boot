@@ -17,7 +17,7 @@ public class MyRoute extends RouteBuilder {
         .choice()
             .when(myPredicate).to("file:///Users/stefan/Downloads/output/")
         .otherwise()
-            .to("file:///Users/stefan/Downloads/output2/")
+            .to("file:///Users/stefan/Downloads/output_error/")
         .end();
 //        .process(myProcessor)
 //        .to("file:///Users/stefan/Downloads/output/").end();
