@@ -1,27 +1,49 @@
 package ch.so.agi.apachecamel;
 
+import java.io.File;
+
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.processor.idempotent.FileIdempotentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MyRoute extends RouteBuilder {
 //    Processor myProcessor = new MyProcessor();
 //    Predicate myPredicate = new MyPredicate();
-    Predicate ilivalidatorPredicate = new IlivalidatorPredicate();
+//    Predicate ilivalidatorPredicate = new IlivalidatorPredicate();
     
     @Override
-    public void configure() throws Exception {
-//        from("file:///Users/stefan/tmp/data/?noop=true").to("file:///Users/stefan/Downloads/output/");
-        from("file:///Users/stefan/tmp/data/?readLock=changed")
-        .choice()
-            .when(ilivalidatorPredicate).to("file:///Users/stefan/Downloads/output/")
-        .otherwise()
-            .to("file:///Users/stefan/Downloads/output_error/")
-        .end();
-//        .process(myProcessor)
-//        .to("file:///Users/stefan/Downloads/output/").end();
-    }
+    public void configure() throws Exception {       
+                        
 
+        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\dm01avso24lv95_2\\shp\\?password={{env:ftpPwdInfogrips}}&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+//        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\dm01avso24lv95_2\\shp\\?password={{env:ftpPwdInfogrips}}&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000")
+        .to("file:///Users/stefan/Downloads/output/");
+        
+        
+    }
+    
+    @Bean
+    public FileIdempotentRepository fileConsumerRepo() {
+        FileIdempotentRepository fileConsumerRepo = null;
+        try {
+            fileConsumerRepo = new FileIdempotentRepository();
+            fileConsumerRepo.setFileStore(new File("/Users/stefan/tmp/dm01_shp_downloaded.txt"));
+            fileConsumerRepo.setCacheSize(5000);
+            fileConsumerRepo.setMaxFileStoreSize(51200000);
+
+        } catch (Exception e) {
+            log.error("############ Caught exception inside Creating fileConsumerRepo ..." + e.getMessage());
+        }
+        if (fileConsumerRepo == null) {
+            log.error("############ fileConsumerRepo == null ...");
+        }
+        return fileConsumerRepo;
+    }
 }

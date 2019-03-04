@@ -17,7 +17,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.apache.camel:camel-spring-boot-starter:2.23.1'
+    implementation 'org.apache.camel:camel-spring-boot-starter:2.23.1'
+    implementation 'org.apache.camel:camel-ftp:2.23.1'
 	implementation 'ch.interlis:ilivalidator:1.10.1-SNAPSHOT'
 	
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
