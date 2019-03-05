@@ -1,12 +1,6 @@
 # apache-camel-spring-boot
 apache-camel with spring-boot
 
-Env-Variablen MacOS:
-```
-launchctl setenv ftpUserInfogrips xxxx
-launchctl setenv ftpPwdInfogrips yyyy
-```
-
 ## DB-Schema vorbereiten
 
 ### ili2pg
@@ -42,3 +36,8 @@ V3:
 java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir setup/. --models GB2AV --dataset VOLLZUG_SO0200002401_1531_20180105113131.xml --import setup/VOLLZUG_SO0200002401_1531_20180105113131.xml 
 ```
 
+## Env-Variablen macOS
+```
+launchctl setenv ftpUserInfogrips xxxx
+launchctl setenv ftpPwdInfogrips yyyy
+```
