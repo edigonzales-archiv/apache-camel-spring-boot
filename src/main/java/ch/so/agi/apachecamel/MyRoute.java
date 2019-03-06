@@ -1,6 +1,7 @@
 package ch.so.agi.apachecamel;
 
 import java.io.File;
+import java.io.InputStream;
 
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
@@ -39,12 +40,13 @@ public class MyRoute extends RouteBuilder {
             .end()
         .end();
         
-        from("file:///Users/stefan/Downloads/output_unzipped/")
-        .to("file:///Users/stefan/Downloads/output_unzipped_ready/")
-        .end();
+        // mit inline process-klasse body zeigen.
         
-//        .to("ili2pg://bar");
-        
+        // "Transaktion" geht verloren.
+        // idempotentRepository....
+//        from("file:///Users/stefan/Downloads/output_unzipped/")
+//        .to("file:///Users/stefan/Downloads/output_unzipped_ready/")
+//        .end();        
     }
     
     @Bean
