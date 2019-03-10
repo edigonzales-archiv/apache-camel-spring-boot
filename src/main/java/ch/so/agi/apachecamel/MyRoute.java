@@ -3,12 +3,14 @@ package ch.so.agi.apachecamel;
 import java.io.File;
 import java.io.InputStream;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.processor.idempotent.FileIdempotentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -20,14 +22,25 @@ public class MyRoute extends RouteBuilder {
 //    Predicate myPredicate = new MyPredicate();
 //    Predicate ilivalidatorPredicate = new IlivalidatorPredicate();
     
+    @Value("${app.ftpUserInfogrips}")
+    private String ftpUserInfogrips;
+
+    @Value("${app.ftpPwdInfogrips}")
+    private String ftpPwdInfogrips;
+
+    @Value("${app.ftpUrlInfogrips}")
+    private String ftpUrlInfogrips;
+
+    @Value("${app.idempotentFileUrl}")
+    private String idempotentFileUrl;
+    
     @Override
     public void configure() throws Exception {       
                         
-
-        // TODO:
-        // - download only 'VOLLZUG' (?)
+        log.info("*************: " + ftpUserInfogrips);
         
-        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\gb2av\\?fileName=VOLLZUG_SO0200002401_1531_20170420081516.zip&password={{env:ftpPwdInfogrips}}&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+        // ENV Variablen "direkt": {{env:ftpUserInfogrips}}
+        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?fileName=VOLLZUG_SO0200002401_1531_20170420081516.zip&password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
 //        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\gb2av\\?password={{env:ftpPwdInfogrips}}&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
 //        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\dm01avso24lv95_2\\shp\\?password={{env:ftpPwdInfogrips}}&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
 //        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\dm01avso24lv95_2\\shp\\?password={{env:ftpPwdInfogrips}}&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000")
@@ -38,7 +51,12 @@ public class MyRoute extends RouteBuilder {
                 .when(body().isNotNull())
                     .to("file:///Users/stefan/Downloads/output_unzipped/")
             .end()
-        .end();
+        .end().process(new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                log.info(exchange.getIn().getBody().getClass().toString());
+                log.info(exchange.getIn().getBody().toString());
+           }
+        });
         
         // mit inline process-klasse body zeigen.
         
