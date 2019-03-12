@@ -44,6 +44,8 @@ launchctl setenv ftpUserInfogrips xxxx
 launchctl setenv ftpPwdInfogrips yyyy
 launchctl setenv ftpUrlInfogrips ftp.infogrips.ch
 launchctl setenv idempotentFileUrl /Users/stefan/tmp/gb2av_idempotent.txt
+launchctl setenv pathToDownloadFolder /Users/stefan/Downloads/output/
+launchctl setenv pathToUnzipFolder /Users/stefan/Downloads/output_unzipped/
 ```
 
 ### Linux
@@ -51,3 +53,14 @@ export ftpUserInfogrips=vaso
 export ftpPwdInfogrips=vaso123
 export ftpUrlInfogrips=ftp.infogrips.ch
 export idempotentFileUrl=/Users/stefan/tmp/gb2av_idempotent.txt
+
+## Old code snipptes (to be deleted)
+```
+// ENV Variablen "direkt": {{env:ftpUserInfogrips}}
+
+//        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\gb2av\\?password={{env:ftpPwdInfogrips}}&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+//        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\dm01avso24lv95_2\\shp\\?password={{env:ftpPwdInfogrips}}&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+//        from("ftp://{{env:ftpUserInfogrips}}@ftp.infogrips.ch/\\dm01avso24lv95_2\\shp\\?password={{env:ftpPwdInfogrips}}&autoCreate=false&noop=true&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=10000")
+
+```
+

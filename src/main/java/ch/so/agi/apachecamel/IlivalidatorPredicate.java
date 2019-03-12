@@ -9,9 +9,10 @@ import ch.ehi.basics.settings.Settings;
 import org.interlis2.validator.Validator;
 
 public class IlivalidatorPredicate implements Predicate {
-
+        
     @Override
     public boolean matches(Exchange exchange) {
+        
         File dataFile = exchange.getIn().getBody(File.class);
         
         Settings settings = new Settings();
@@ -22,4 +23,7 @@ public class IlivalidatorPredicate implements Predicate {
         return valid;
     }
 
+    public void setSettings() {
+        System.out.println("****: Settings");
+    }
 }
