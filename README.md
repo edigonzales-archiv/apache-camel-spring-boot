@@ -40,6 +40,8 @@ java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50
 
 ### macOS
 ```
+launchctl setenv APP_GB2AV_ENV dev
+
 launchctl setenv ftpUserInfogrips xxxx
 launchctl setenv ftpPwdInfogrips yyyy
 launchctl setenv ftpUrlInfogrips ftp.infogrips.ch
