@@ -18,8 +18,6 @@ import org.apache.camel.dataformat.zipfile.ZipSplitter;
 
 @Component
 public class MyRoute extends RouteBuilder {
-//    Processor myProcessor = new MyProcessor();
-//    Predicate myPredicate = new MyPredicate();
     IlivalidatorPredicate ilivalidatorPredicate = new IlivalidatorPredicate();
     
     @Value("${app.ftpUserInfogrips}")
