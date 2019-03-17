@@ -1,40 +1,46 @@
 # apache-camel-spring-boot
 apache-camel with spring-boot
 
-## DB-Schema vorbereiten
+## DB-Schema mit ili2pg vorbereiten
+### Datenmodell
+(Funktioniert nur mit V4) `KS3-20060703.ili` wird lokal vorgehalten, da das Attribut `Mutationsnummer` in der Klasse `GB2AV.Vollzugsgegenstaende.Vollzugsgegenstand` mit einem Metaattribut versehen wird, damit die Struktur als JSON abgebildet wird und alles in einer DB-Tabelle vorliegt (was uns momentan interessiert).
 
-### ili2pg
-Noch nicht i.O.:
+### SQL:
+Zuerst "nur" SQL-Datei von ili2pg erstellen lassen und dann diese ausführen, funktioniert mit 4.0.0-SNAPSHOT momentan noch nicht:
 ```
-java -jar /Users/stefan/apps/ili2pg-4.0.0-20190301.105458-20-bindist/ili2pg-4.0.0-SNAPSHOT.jar --createBasketCol --createDatasetCol --createFk --createFkIdx --coalesceJson --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir . --models GB2AV
+java -jar /Users/stefan/apps/ili2pg-4.0.0-20190314.084652-23-bindist/ili2pg-4.0.0-SNAPSHOT.jar --createBasketCol --createDatasetCol --createFk --createFkIdx --coalesceJson --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir . --models GB2AV
+```
+Grund dafür: https://github.com/claeis/ili2db/issues/261
+
+### 4.0.0-SNAPSHOT
+Schemaimport:
+```
+java -jar /Users/stefan/apps/ili2pg-4.0.0-20190314.084652-23-bindist/ili2pg-4.0.0-SNAPSHOT.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --coalesceJson --createEnumTabs --nameByTopic --dbschema agi_gb2av --modeldir setup/. --models GB2AV --schemaimport
 ```
 
-Bis auf weiteres:
-
-V4:
+Testimport:
 ```
-java -jar /Users/stefan/apps/ili2pg-4.0.0-20190301.105458-20-bindist/ili2pg-4.0.0-SNAPSHOT.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --coalesceJson --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir setup/. --models GB2AV --schemaimport
+java -jar /Users/stefan/apps/ili2pg-4.0.0-20190314.084652-23-bindist/ili2pg-4.0.0-SNAPSHOT.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --dbschema agi_gb2av --modeldir setup/. --models GB2AV --dataset VOLLZUG_SO0200002401_1531_20180105113131.xml --import setup/VOLLZUG_SO0200002401_1531_20180105113131.xml
 ```
 
-V3:
+### 3.12.2
+
+Schemaimport:
 ```
 java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir setup/. --models GB2AV --schemaimport
 ```
 
-
-### Datenmodell
-(Funktioniert erst mit V4) `KS3-20060703.ili` wird lokal vorgehalten, da das Attribut `Mutationsnummer` in der Klasse `GB2AV.Vollzugsgegenstaende.Vollzugsgegenstand` mit einem Metaattribut versehen wird, damit die Struktur als JSON abgebildet wird und alles in einer DB-Tabelle vorliegt (was uns momentan interessiert).
-
-### Testimport
-V4:
-```
-java -jar /Users/stefan/apps/ili2pg-4.0.0-20190301.105458-20-bindist/ili2pg-4.0.0-SNAPSHOT.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --dbschema agi_gb2av --modeldir . --models GB2AV --import setup/VOLLZUG_SO0200002401_1531_20180105113131.xml
-```
-
-V3:
+Testimport:
 ```
 java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir setup/. --models GB2AV --dataset VOLLZUG_SO0200002401_1531_20180105113131.xml --import setup/VOLLZUG_SO0200002401_1531_20180105113131.xml 
 ```
+
+## Temp
+```
+docker build -t sogis/gb2av-web-service .
+docker run --restart always -p 8888:8888 -e APP_GB2AV_ENV='prod' -e ftpUserInfogrips='xxx' -e ftpPwdInfogrips='yyy' sogis/gb2av-web-service
+```
+
 
 ## Env-Variablen
 
@@ -51,8 +57,8 @@ launchctl setenv pathToUnzipFolder /Users/stefan/Downloads/output_unzipped/
 ```
 
 ### Linux
-export ftpUserInfogrips=vaso
-export ftpPwdInfogrips=vaso123
+export ftpUserInfogrips=yyyy
+export ftpPwdInfogrips=xxxx
 export ftpUrlInfogrips=ftp.infogrips.ch
 export idempotentFileUrl=/Users/stefan/tmp/gb2av_idempotent.txt
 

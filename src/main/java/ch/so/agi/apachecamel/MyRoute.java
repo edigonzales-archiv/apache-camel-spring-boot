@@ -40,24 +40,30 @@ public class MyRoute extends RouteBuilder {
     @Value("${app.pathToUnzipFolder}")
     private String pathToUnzipFolder;
 
+    @Value("${app.pathToErrorFolder}")
+    private String pathToErrorFolder;
+
     @Override
     public void configure() throws Exception {      
-        ilivalidatorPredicate.setSettings();                                
+        ilivalidatorPredicate.setSettings(); // just a test                        
         
+        // Download the zip files from the infogrips ftp and unzip the file into another directory.
         from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?fileName=VOLLZUG_SO0200002401_1531_20170420081516.zip&password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
         .to("file://"+pathToDownloadFolder)
         .split(new ZipSplitter())
-        .streaming().convertBodyTo(String.class) //What happens when it gets huge? Is 'String.class' a problem? 
+        .streaming().convertBodyTo(String.class) // What happens when it gets huge? Is 'String.class' a problem? 
             .choice()
                 .when(body().isNotNull())
                     .to("file://"+pathToUnzipFolder)
             .end()
         .end();
         
+        // Validate the file with ilivalidator. If valid, import it into the database with the camel ili2pg component.
+        // If not valid, copy file into an error directory.
         from("file:///Users/stefan/Downloads/output_unzipped/?readLock=changed&noop=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
             .choice()
                 .when(ilivalidatorPredicate).to("file:///Users/stefan/Downloads/output_unzipped_ready/")
-                .otherwise().to("file:///Users/stefan/Downloads/output_error/")
+                .otherwise().to("file://"+pathToErrorFolder)
         .end();        
     }
     

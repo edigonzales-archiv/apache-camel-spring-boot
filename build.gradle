@@ -4,24 +4,31 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply from: "$rootDir/gradle/versioning.gradle"
 
-group = 'ch.so.agi.'
-version = '0.0.1-SNAPSHOT'
+ext {
+    apacheCamelVersion = "2.23.1"
+}
+
+group = 'ch.so.agi'
+
 sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 repositories {
     mavenLocal()
 	mavenCentral()
 	jcenter()
-	maven { url "http://jars.interlis.ch" } 
+    maven { url "https://dl.bintray.com/sogis/camel-ili2pg/" } 
+    maven { url "http://jars.interlis.ch" }     
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.apache.camel:camel-spring-boot-starter:2.23.1'
-    implementation 'org.apache.camel:camel-ftp:2.23.1'
-    implementation 'org.apache.camel:camel-zipfile:2.23.1'
-    implementation 'ch.so.agi.camel:camel-ili2pg:0.0.1-SNAPSHOT'
+    implementation "org.apache.camel:camel-spring-boot-starter:${apacheCamelVersion}"
+    implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"
+    implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
+    implementation 'ch.so.agi.camel:camel-ili2pg:1.0.+'
 	implementation 'ch.interlis:ilivalidator:1.10.1-SNAPSHOT'
 	
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
