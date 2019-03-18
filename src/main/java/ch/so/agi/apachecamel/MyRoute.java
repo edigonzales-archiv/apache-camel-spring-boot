@@ -58,11 +58,11 @@ public class MyRoute extends RouteBuilder {
         
         // Validate the file with ilivalidator. If valid, import it into the database with the camel ili2pg component.
         // If not valid, copy file into an error directory.
-        from("file:///Users/stefan/Downloads/output_unzipped/?readLock=changed&noop=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
-            .choice()
-                .when(ilivalidatorPredicate).to("file:///Users/stefan/Downloads/output_unzipped_ready/")
-                .otherwise().to("file://"+pathToErrorFolder)
-        .end();        
+//        from("file://"+pathToUnzipFolder+"/?readLock=changed&noop=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+//            .choice()
+//                .when(ilivalidatorPredicate).to("file:///Users/stefan/Downloads/output_unzipped_ready/")
+//                .otherwise().to("file://"+pathToErrorFolder)
+//        .end();        
     }
     
     @Bean

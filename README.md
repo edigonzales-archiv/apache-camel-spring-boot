@@ -38,8 +38,19 @@ java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50
 ## Docker lokal
 ```
 docker build -t sogis/gb2av-integrator .
-docker run --restart always -p 8888:8888 -e APP_GB2AV_ENV='prod' -e ftpUserInfogrips='xxx' -e ftpPwdInfogrips='yyy' sogis/gb2av-integrator
+docker run --restart always -p 8888:8888 -e "SPRING_PROFILES_ACTIVE=prod" -e "ftpUserInfogrips=xxx" -e "ftpPwdInfogrips=yyy" sogis/gb2av-integrator
 ```
+
+```
+-v somewhere/to/config:/gb2av_config
+```
+mit den `application[-xxx].properties`-Dateien.
+
+```
+-v somewhere/to/data:/gb2av_data
+```
+für die heruntergeladenen Daten und das idempotent File.
+
 
 
 ## Env-Variablen
@@ -47,20 +58,12 @@ docker run --restart always -p 8888:8888 -e APP_GB2AV_ENV='prod' -e ftpUserInfog
 ### macOS
 ```
 launchctl setenv APP_GB2AV_ENV dev
-
-launchctl setenv ftpUserInfogrips xxxx
-launchctl setenv ftpPwdInfogrips yyyy
-launchctl setenv ftpUrlInfogrips ftp.infogrips.ch
-launchctl setenv idempotentFileUrl /Users/stefan/tmp/gb2av_idempotent.txt
-launchctl setenv pathToDownloadFolder /Users/stefan/Downloads/output/
-launchctl setenv pathToUnzipFolder /Users/stefan/Downloads/output_unzipped/
 ```
 
 ### Linux
-export ftpUserInfogrips=yyyy
-export ftpPwdInfogrips=xxxx
-export ftpUrlInfogrips=ftp.infogrips.ch
-export idempotentFileUrl=/Users/stefan/tmp/gb2av_idempotent.txt
+```
+export APP_GB2AV_ENV=dev
+```
 
 ## Old code snippets (to be deleted)
 ```
