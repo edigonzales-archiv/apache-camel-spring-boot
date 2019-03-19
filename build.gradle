@@ -19,7 +19,6 @@ repositories {
     mavenLocal()
 	mavenCentral()
 	jcenter()
-    maven { url "https://dl.bintray.com/sogis/camel-ili2pg/" } 
     maven { url "http://jars.interlis.ch" }     
 }
 
@@ -28,7 +27,7 @@ dependencies {
     implementation "org.apache.camel:camel-spring-boot-starter:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
-    implementation 'ch.so.agi.camel:camel-ili2pg:1.0.+'
+    implementation 'ch.so.agi.camel:camel-ili2pg:latest.integration'
 	implementation 'ch.interlis:ilivalidator:1.10.1-SNAPSHOT'
 	
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'

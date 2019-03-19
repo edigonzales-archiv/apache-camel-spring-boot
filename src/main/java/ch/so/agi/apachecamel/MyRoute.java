@@ -46,7 +46,8 @@ public class MyRoute extends RouteBuilder {
         ilivalidatorPredicate.setSettings(); // just a test                        
         
         // Download the zip files from the infogrips ftp and unzip the file into another directory.
-        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?fileName=VOLLZUG_SO0200002401_1531_20170420081516.zip&password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+        //from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?fileName=VOLLZUG_SO0200002401_1531_20170420081516.zip&password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay=500&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
         .to("file://"+pathToDownloadFolder)
         .split(new ZipSplitter())
         .streaming().convertBodyTo(String.class) // What happens when it gets huge? Is 'String.class' a problem? 
@@ -58,11 +59,12 @@ public class MyRoute extends RouteBuilder {
         
         // Validate the file with ilivalidator. If valid, import it into the database with the camel ili2pg component.
         // If not valid, copy file into an error directory.
-//        from("file://"+pathToUnzipFolder+"/?readLock=changed&noop=true&delay=5000&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
-//            .choice()
-//                .when(ilivalidatorPredicate).to("file:///Users/stefan/Downloads/output_unzipped_ready/")
-//                .otherwise().to("file://"+pathToErrorFolder)
-//        .end();        
+        from("file://"+pathToUnzipFolder+"/?readLock=changed&noop=true&delay=500&initialDelay=2000&idempotentRepository=#fileConsumerRepo&idempotentKey=${file:name}-${file:size}")
+//        .setHeader("dataset", simple("${in.header.CamelFileName}"))
+            .choice()
+                .when(ilivalidatorPredicate).toD("ili2pg:import?dbhost=192.168.50.8&dbport=5432&dbdatabase=pub&dbschema=agi_gb2av&dbusr=ddluser&dbpwd=ddluser&dataset=${in.header.CamelFileName}")
+                .otherwise().to("file://"+pathToErrorFolder)
+        .end();        
     }
     
     @Bean
