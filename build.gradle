@@ -24,12 +24,13 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-jdbc')	
     implementation "org.apache.camel:camel-spring-boot-starter:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
     implementation 'ch.so.agi.camel:camel-ili2pg:latest.integration'
 	implementation 'ch.interlis:ilivalidator:1.10.1-SNAPSHOT'
-	
+    runtimeOnly('org.postgresql:postgresql') // TODO: version
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

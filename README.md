@@ -59,6 +59,8 @@ für die heruntergeladenen Daten und das idempotent File.
 ### macOS
 ```
 launchctl setenv APP_GB2AV_ENV dev
+launchctl setenv ftpUserInfogrips xxxx
+launchctl setenv ftpPwdInfogrips yyyy
 ```
 
 ### Linux
@@ -78,4 +80,26 @@ export APP_GB2AV_ENV=dev
 
 
 ```
-
+## SQL-Queries
+```
+SELECT
+	aimport.importdate,
+	vollzugsgegenstand.t_datasetname AS datasetname,
+	vollzugsgegenstand.status,
+	TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') AS grundbucheintrag,
+	TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') AS tagebucheintrag,
+	vollzugsgegenstand.mutationsnummer->>'Nummer' AS mutationsnummer,
+	vollzugsgegenstand.mutationsnummer->>'NBIdent' AS nbident
+	
+FROM
+	agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand AS vollzugsgegenstand
+	LEFT JOIN agi_gb2av.t_ili2db_dataset AS dataset
+	ON dataset.datasetname = vollzugsgegenstand.t_datasetname
+	LEFT JOIN agi_gb2av.t_ili2db_import AS aimport
+	ON aimport.dataset = dataset.t_id
+ORDER BY
+	TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') DESC,
+	TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') DESC,
+	aimport.importdate DESC
+;
+```
