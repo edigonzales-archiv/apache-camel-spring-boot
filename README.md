@@ -15,7 +15,7 @@ Grund dafür: https://github.com/claeis/ili2db/issues/261
 ### 4.0.0-SNAPSHOT
 Schemaimport:
 ```
-java -jar /Users/stefan/apps/ili2pg-4.0.0-20190314.084652-23-bindist/ili2pg-4.0.0-SNAPSHOT.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --coalesceJson --createEnumTabs --nameByTopic --dbschema agi_gb2av --modeldir setup/. --models GB2AV --schemaimport
+java -jar /Users/stefan/apps/ili2pg-4.0.0-20190314.084652-23-bindist/ili2pg-4.0.0-SNAPSHOT.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --coalesceJson --createEnumTabs --nameByTopic --createscript fubar.sql --dbschema agi_gb2av --modeldir setup/. --models GB2AV --schemaimport
 ```
 
 Testimport:
@@ -27,12 +27,12 @@ java -jar /Users/stefan/apps/ili2pg-4.0.0-20190314.084652-23-bindist/ili2pg-4.0.
 
 Schemaimport:
 ```
-java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir setup/. --models GB2AV --schemaimport
+java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --models GB2AV --schemaimport
 ```
 
 Testimport:
 ```
-java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --modeldir setup/. --models GB2AV --dataset VOLLZUG_SO0200002401_1531_20180105113131.xml --import setup/VOLLZUG_SO0200002401_1531_20180105113131.xml 
+java -jar /Users/stefan/apps/ili2pg-3.12.2/ili2pg-3.12.2.jar --dbhost 192.168.50.8 --dbdatabase pub --dbusr ddluser --dbpwd ddluser --createBasketCol --createDatasetCol --createFk --createFkIdx --createEnumTabs --nameByTopic --dbschema agi_gb2av --createscript fubar.sql --models GB2AV --dataset VOLLZUG_SO0200002401_1531_20180105113131.xml --import setup/VOLLZUG_SO0200002401_1531_20180105113131.xml 
 ```
 
 ## Docker lokal
@@ -81,6 +81,8 @@ export APP_GB2AV_ENV=dev
 
 ```
 ## SQL-Queries
+
+Mit ili2pg-JSON-Mapping:
 ```
 SELECT
 	aimport.importdate,
@@ -101,5 +103,30 @@ ORDER BY
 	TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') DESC,
 	TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') DESC,
 	aimport.importdate DESC
+;
+```
+
+Ohne ili2pg-JSON-Mapping:
+```
+SELECT
+  aimport.importdate,
+  vollzugsgegenstand.t_datasetname AS datasetname,
+  vollzugsgegenstand.status AS status,
+  TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') AS landRegisterEntryDate,
+  TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') AS journalEntryDate,
+  mutationsnummer.nummer AS referenceNumber,
+  mutationsnummer.nbident AS identnd
+FROM
+  agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand AS vollzugsgegenstand
+  LEFT JOIN agi_gb2av.mutationsnummer AS mutationsnummer
+  ON mutationsnummer.vollzgsggnszgsggnstand_mutationsnummer = vollzugsgegenstand.t_id
+  LEFT JOIN agi_gb2av.t_ili2db_dataset AS dataset
+  ON dataset.datasetname = vollzugsgegenstand.t_datasetname
+  LEFT JOIN agi_gb2av.t_ili2db_import AS aimport
+  ON aimport.dataset = dataset.t_id
+ORDER BY
+  TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') DESC,
+  TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') DESC,
+  aimport.importdate DESC
 ;
 ```
