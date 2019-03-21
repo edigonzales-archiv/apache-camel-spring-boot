@@ -21,30 +21,31 @@ public class ExecutionMessageDAOImpl implements ExecutionMessageDAO {
 
     @Override
     public List<ExecutionMessage> getExecutionMessages() {
-        String sql = "SELECT\n" + 
-                "    aimport.importdate AS importdate,\n" + 
-                "    vollzugsgegenstand.t_datasetname AS datasetname,\n" + 
-                "    vollzugsgegenstand.status AS status,\n" + 
-                "    TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') AS landRegisterEntryDate,\n" + 
-                "    TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') AS journalEntryDate,\n" + 
-                "    vollzugsgegenstand.mutationsnummer->>'Nummer' AS referenceNumber,\n" + 
-                "    vollzugsgegenstand.mutationsnummer->>'NBIdent' AS identnd\n" + 
-                "    \n" + 
+        String sql = ""
+                + "SELECT\n" + 
+                "  aimport.importdate,\n" + 
+                "  vollzugsgegenstand.t_datasetname AS datasetname,\n" + 
+                "  vollzugsgegenstand.status AS status,\n" + 
+                "  TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') AS landRegisterEntryDate,\n" + 
+                "  TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') AS journalEntryDate,\n" + 
+                "  mutationsnummer.nummer AS referenceNumber,\n" + 
+                "  mutationsnummer.nbident AS identnd\n" + 
                 "FROM\n" + 
-                "    agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand AS vollzugsgegenstand\n" + 
-                "    LEFT JOIN agi_gb2av.t_ili2db_dataset AS dataset\n" + 
-                "    ON dataset.datasetname = vollzugsgegenstand.t_datasetname\n" + 
-                "    LEFT JOIN agi_gb2av.t_ili2db_import AS aimport\n" + 
-                "    ON aimport.dataset = dataset.t_id\n" +
+                "  agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand AS vollzugsgegenstand\n" + 
+                "  LEFT JOIN agi_gb2av.mutationsnummer AS mutationsnummer\n" + 
+                "  ON mutationsnummer.vollzgsggnszgsggnstand_mutationsnummer = vollzugsgegenstand.t_id\n" + 
+                "  LEFT JOIN agi_gb2av.t_ili2db_dataset AS dataset\n" + 
+                "  ON dataset.datasetname = vollzugsgegenstand.t_datasetname\n" + 
+                "  LEFT JOIN agi_gb2av.t_ili2db_import AS aimport\n" + 
+                "  ON aimport.dataset = dataset.t_id\n" + 
                 "ORDER BY\n" + 
-                "    TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') DESC,\n" + 
-                "    TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') DESC,\n" + 
-                "    aimport.importdate DESC\n" + 
-                "";
+                "  TO_DATE(vollzugsgegenstand.tagebucheintrag, 'YYYY-MM-DD') DESC,\n" + 
+                "  TO_DATE(vollzugsgegenstand.grundbucheintrag, 'YYYY-MM-DD') DESC,\n" + 
+                "  aimport.importdate DESC\n" + 
+                ";";
         
         RowMapper<ExecutionMessage> rowMapper = new BeanPropertyRowMapper<ExecutionMessage>(ExecutionMessage.class);
         List<ExecutionMessage> list = jdbcTemplate.query(sql, rowMapper);
         return list;
     }
-
 }
